@@ -13,7 +13,7 @@ import {
 } from "@strapi/design-system";
 import { Check } from "@strapi/icons";
 import useConfig from "../../hooks/useConfig";
-import { AnErrorOccurred } from "@strapi/helper-plugin";
+import { AnErrorOccurred } from "@strapi/strapi/admin";
 import { Config, UpdateConfig } from "../../../../types";
 
 export default function Settings() {

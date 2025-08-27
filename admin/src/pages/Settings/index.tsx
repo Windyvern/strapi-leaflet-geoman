@@ -5,16 +5,16 @@
  */
 
 import pluginId from "../../pluginId";
-import { CheckPagePermissions } from "@strapi/helper-plugin";
+import { CheckPermissions } from "@strapi/strapi/admin";
 import Settings from "../../components/Settings";
 
 const permissions = [{ action: `plugin::${pluginId}.config`, subject: null }];
 
 const SettingsPage = () => {
   return (
-    <CheckPagePermissions permissions={permissions}>
+    <CheckPermissions permissions={permissions}>
       <Settings />
-    </CheckPagePermissions>
+    </CheckPermissions>
   );
 };
 
