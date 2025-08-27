@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import pluginId from "../pluginId";
-import { auth } from "@strapi/helper-plugin";
+import { auth } from "@strapi/strapi/admin";
 
 const instance: AxiosInstance = axios.create({
   baseURL: `${process.env.STRAPI_ADMIN_BACKEND_URL}/${pluginId}`,

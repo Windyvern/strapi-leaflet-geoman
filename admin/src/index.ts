@@ -1,4 +1,4 @@
-import { prefixPluginTranslations } from "@strapi/helper-plugin";
+import { prefixPluginTranslations } from "@strapi/strapi/admin";
 
 import pluginPkg from "../../package.json";
 import pluginId from "./pluginId";
@@ -7,7 +7,7 @@ import PluginIcon from "./components/PluginIcon";
 import getTrad from "./utils/getTrad";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import generateStyles from "./utils/generate-styles";
 
@@ -15,134 +15,109 @@ const name = pluginPkg.strapi.displayName;
 
 export default {
   register(app: any) {
-    console.log(app);
-    app.createSettingSection(
+    app.addSettingsLink("global", {
+      id: `${pluginId}-link-label`,
+      intlLabel: {
+        id: getTrad("settings.link-label"),
+        defaultMessage: "Configuration",
+      },
+      to: `/settings/${pluginId}`,
+      Component: async () => import("./pages/Settings"),
+      permissions: [{ action: `plugin::${pluginId}.config`, subject: null }],
+    });
+
+    app.addFields([
       {
-        id: `${pluginId}-label`,
+        name: "geojson",
+        pluginId,
+        type: "json",
         intlLabel: {
-          id: getTrad("settings.section-label"),
+          id: getTrad("input.label"),
           defaultMessage: name,
         },
-      }, // Section to create
-      [
-        // links
-        {
-          intlLabel: {
-            id: getTrad("settings.link-label"),
-            defaultMessage: "Configuration",
-          },
-          id: `${pluginId}-link-label`,
-          to: `/settings/${pluginId}`,
-          Component: async () => {
-            const component = await import(
-              /* webpackChunkName: "settings-page" */ "./pages/Settings"
-            );
-
-            return component;
-          },
-          permissions: [
-            { action: `plugin::${pluginId}.config`, subject: null },
+        intlDescription: {
+          id: getTrad("input.description"),
+          defaultMessage: "Draw/pick your location",
+        },
+        icon: PluginIcon,
+        components: {
+          Input: async () => import("./components/Input"),
+        },
+        options: {
+          advanced: [
+            {
+              name: "optionsLatitude",
+              type: "string",
+              intlLabel: {
+                id: getTrad("attribute.item.defaultLat"),
+                defaultMessage: "Default latitude",
+              },
+            },
+            {
+              name: "optionsLongitude",
+              type: "string",
+              intlLabel: {
+                id: getTrad("attribute.item.defaultLng"),
+                defaultMessage: "Default longitude",
+              },
+            },
+            {
+              name: "optionsZoom",
+              type: "number",
+              intlLabel: {
+                id: getTrad("attribute.item.defaultZoom"),
+                defaultMessage: "Default Zoom Level",
+              },
+            },
+            {
+              name: "optionsTileURL",
+              type: "string",
+              intlLabel: {
+                id: getTrad("attribute.item.defaultTileURL"),
+                defaultMessage: "Tile URL",
+              },
+            },
+            {
+              name: "optionsTileAttribution",
+              type: "string",
+              intlLabel: {
+                id: getTrad("attribute.item.defaultTileAttribution"),
+                defaultMessage: "Tile Attribution",
+              },
+            },
+            {
+              name: "optionsTileAccessToken",
+              type: "string",
+              intlLabel: {
+                id: getTrad("attribute.item.defaultTileAccessToken"),
+                defaultMessage: "Tile Access Token",
+              },
+            },
+            {
+              sectionTitle: {
+                id: "global.settings",
+                defaultMessage: "Settings",
+              },
+              items: [
+                {
+                  name: "required",
+                  type: "checkbox",
+                  intlLabel: {
+                    id: "form.attribute.item.requiredField",
+                    defaultMessage: "Required field",
+                  },
+                  description: {
+                    id: "form.attribute.item.requiredField.description",
+                    defaultMessage:
+                      "You won't be able to create an entry if this field is empty",
+                  },
+                },
+              ],
+            },
           ],
         },
-      ]
-    );
-
-    app.customFields.register({
-      name: "geojson",
-      pluginId, // the custom field is created by plugin
-      type: "json", // the color will be stored as a json
-      intlLabel: {
-        id: getTrad("input.label"),
-        defaultMessage: name,
       },
-      intlDescription: {
-        id: getTrad("input.description"),
-        defaultMessage: "Draw/pick your location",
-      },
-      icon: PluginIcon, // don't forget to create/import your icon component
-      // components: {
-      //   Input: async () =>
-      //     import(
-      //       /* webpackChunkName: "input-component" */ "./components/Input"
-      //     ),
-      // },
-      components: {
-        Input: async () => import("./components/Input"),
-      },
-      options: {
-        advanced: [
-          {
-            name: "optionsLatitude",
-            type: "string",
-            intlLabel: {
-              id: getTrad("attribute.item.defaultLat"),
-              defaultMessage: "Default latitude",
-            },
-          },
-          {
-            name: "optionsLongitude",
-            type: "string",
-            intlLabel: {
-              id: getTrad("attribute.item.defaultLng"),
-              defaultMessage: "Default longitude",
-            },
-          },
-          {
-            name: "optionsZoom",
-            type: "number",
-            intlLabel: {
-              id: getTrad("attribute.item.defaultZoom"),
-              defaultMessage: "Default Zoom Level",
-            },
-          },
-          {
-            name: "optionsTileURL",
-            type: "string",
-            intlLabel: {
-              id: getTrad("attribute.item.defaultTileURL"),
-              defaultMessage: "Tile URL",
-            },
-          },
-          {
-            name: "optionsTileAttribution",
-            type: "string",
-            intlLabel: {
-              id: getTrad("attribute.item.defaultTileAttribution"),
-              defaultMessage: "Tile Attribution",
-            },
-          },
-          {
-            name: "optionsTileAccessToken",
-            type: "string",
-            intlLabel: {
-              id: getTrad("attribute.item.defaultTileAccessToken"),
-              defaultMessage: "Tile Access Token",
-            },
-          },
-          {
-            sectionTitle: {
-              id: "global.settings",
-              defaultMessage: "Settings",
-            },
-            items: [
-              {
-                name: "required",
-                type: "checkbox",
-                intlLabel: {
-                  id: "form.attribute.item.requiredField",
-                  defaultMessage: "Required field",
-                },
-                description: {
-                  id: "form.attribute.item.requiredField.description",
-                  defaultMessage:
-                    "You won't be able to create an entry if this field is empty",
-                },
-              },
-            ],
-          },
-        ],
-      },
-    });
+    ]);
 
     const plugin = {
       id: pluginId,
